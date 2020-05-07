@@ -242,8 +242,8 @@ private_key_data    ewogI...
 ```
 
 The big win with this approach is that you don't need to have over-granted service
-accounts spread across pipelines or create and hand over service accounts to users 
+accounts spread across pipelines or create and hand over service accounts to users
 (as long as they have permission to access this roleset path). Additionally, there
-is total visibility on which roles are being used. Any changes would be reviewed
-and approved before being applied.
- 
+is total visibility on which roles are being used and on your overal security
+configuration (permissions, policies, etc). Ideally, any changes would go through
+a peer review process and would be approved before being applied.
