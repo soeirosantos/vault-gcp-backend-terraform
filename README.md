@@ -78,7 +78,7 @@ We will:
 * create a custom role with the permissions needed by Vault
 * bind the service account to the custom role and add it to the project's Policy
 
-```ruby
+```hcl
 // gcp.tf
 
 variable "gcp_project_id" {
@@ -133,7 +133,7 @@ the default credentials in your local environment.
 
 Make sure you fill the `default.auto.tfvars` file with your values.
 
-```ruby
+```hcl
 // default.auto.tfvars
 
 gcp_project_id = "your-project-name"
@@ -153,7 +153,7 @@ $ terraform plan
 The credential required by the `vault_gcp_secret_backend` is a service account
 key. We need to create one now:
 
-```ruby
+```hcl
 // gcp.tf
 
 [...]
@@ -184,7 +184,7 @@ We start the Vault configuration with the GCP secret backend. Notice that we ove
 the default path to define a naming standard. Since this backend is project
 specific we are adding the project ID to the path.
 
-```ruby
+```hcl
 // vault.tf
 
 variable "vault_address" {
@@ -217,7 +217,7 @@ You may want to run `terraform plan` at this point and check how things are goin
 For this lab, we are only interested in managing service accounts with Vault.
 In this way, we are going to configure the `roleset` only.
 
-```ruby
+```hcl
 // vault.tf
 
 [...]
