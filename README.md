@@ -1,16 +1,16 @@
 # Vault as a GCP Broker Laboratory
 
 The purpose of this lab is to show how we can use Vault acting as a broker to
-manage GCP service accounts. We are going to use Terraform to keep the
+manage GCP service accounts. We are going to use Terraform (TF) to keep the
 configuration. It gives more visibility on our infrastrucutre and makes the
-change management process clearer. Since we can have all the TF configuration
+change management process clearer. Since we can have all the TF configurations
 versioned in the VCS, changes can be rolled out through the CI/CD pipelines upon
-aprovemnts. It also increases the visibility of the security definitions such as
+approvemnts. It also increases the visibility of the security definitions such as
 existing roles and policies.
 
-Before we proceed notice that I'll run Vault locally in dev mode to make this lab
+Before we proceed, notice that I'll run Vault locally in dev mode to make this lab
 more interactive. I'll also run the Terraform config and keep the state locally.
-It's out of the scope of this guide to show how things should work in production.
+It's out of the scope for this lab to show how things should work in production.
 
 ## Run Vault
 
@@ -21,11 +21,11 @@ $ docker run --cap-add=IPC_LOCK --rm -it \
 vault
 ```
 
-We are intentionally leaving the process run in foreground so we can easily
+We are intentionally leaving the process running in the foreground so we can easily
 copy the root token and follow the logs.
 
-After the configuration is applied we'll use the Vault CLI to generate a service
-account key. If you don't have it installed you can use
+After the configuration is applied, we'll use the Vault CLI to generate a service
+account key. If you don't have it installed, you can use:
 
 ```bash
 $ docker run --rm -it -e VAULT_ADDR='http://localhost:8200' --net=host vault /bin/sh
@@ -43,14 +43,16 @@ identity_policies    []
 policies             ["root"]
 ```
 
+## GCP Configuration
+
 Lets get started with the Vault GCP backend configuration.
 [This documentation](https://www.vaultproject.io/docs/secrets/gcp) has all the
 details for the backend configuration and its features. I'll use most of it
-directly, feel free to refer to this docs for more context.
+directly; feel free to refer to these docs for more context.
 
-We start with the GCP configuration, supposing we already have a GCP project
-provisioned we start by configuring the service account that Vault is going to
-use to manage other service accounts. We will:
+Suppose we already have a provisioned GCP project, we start by configuring the 
+service account that Vault is going to use to manage other service accounts.
+We will:
 
 * create a service account that is going to configure the backend
 * create a custom role with the permissions needed by Vault
@@ -109,7 +111,7 @@ resource "google_project_iam_member" "vault_gcp_secret_backend_member" {
 Notice that we are not providing credentials to the Google provider. We are using
 the default credentials in your local environment.
 
-Make sure you fill the `default.auto.tfvars` file with your values
+Make sure you fill the `default.auto.tfvars` file with your values.
 
 ```ruby
 // default.auto.tfvars
@@ -129,7 +131,7 @@ $ terraform plan
 ```
 
 The credential required by the `vault_gcp_secret_backend` is a service account
-key. So we need to create one now:
+key. We need to create one now:
 
 ```ruby
 // gcp.tf
@@ -142,13 +144,13 @@ resource "google_service_account_key" "vault_gcp_secret_backend_sa_key" {
 
 ```
 
-Run the Terraform plan again and check how things look like
+Run the Terraform plan again and check how things look like.
 
 ```bash
 $ terraform plan
 ```
 
-We don't need necessarily to do it now but lets apply the GCP changes before moving
+We don't necessarily need to do it now but lets apply the GCP changes before moving
 to the Vault configuration.
 
 ```bash
@@ -156,9 +158,11 @@ $ terraform apply
 # confirm yes
 ```
 
+## Vault Configuration
+
 We start the Vault configuration with the GCP secret backend. Notice that we override
-the default path to define some naming standard. Since this backend is project
-specific we are adding the project id to the path.
+the default path to define a naming standard. Since this backend is project
+specific we are adding the project ID to the path.
 
 ```ruby
 // vault.tf
@@ -184,14 +188,14 @@ resource "vault_gcp_secret_backend" "gcp_secret_backend" {
 }
 ```
 
-We are setting the `default_lease_ttl_seconds` to 2 minutes which means that the
-secrets will not live longer than 2 minutes by default and we also setting the
+We are setting the `default_lease_ttl_seconds` to 2 minutes, which means that the
+secrets will not live longer than 2 minutes by default, and we are setting the
 `max_lease_ttl_seconds` to 1 hour.
 
 You may want to run `terraform plan` at this point and check how things are going.
 
-For this lab we are only interested about managing service accounts from Vault.
-So we are going to configure the `roleset`
+For this lab, we are only interested in managing service accounts with Vault.
+In this way, we are going to configure the `roleset` only.
 
 ```ruby
 // vault.tf
@@ -217,12 +221,12 @@ resource "vault_gcp_secret_roleset" "gcp_secret_backend_gke_admin" {
 
 In this particular case, we are configuring a `roleset` that allows the service
 account keys generated by Vault to manage GKE resources. This is a typical scenario
-where you have you service account configured in one or multiple CI/CD pipelines
-to manage your cluster and deploy your applications.
+where you have you service account configured in the CI/CD pipelines to manage 
+your cluster and deploy your applications.
 
-Just run a `terraform apply` and if everything looks fine confirm and apply it.
+Just run a `terraform apply` and if everything looks fine, confirm and apply it.
 
-To test if it working fine we use the Vault CLI to generate a service account key.
+To test if it is working fine we use the Vault CLI to generate a service account key.
 
 ```bash
 $ vault read gcp-broker/your-project-name-gcp-secret/key/gke-admin
@@ -237,8 +241,9 @@ key_type            TYPE_GOOGLE_CREDENTIALS_FILE
 private_key_data    ewogI...
 ```
 
-The big win with this is that you don't need to have over granted service accounts
- spread across
-many pipelines or create and hand service accounts to users (as long as they have
-permission to access this roleset path). Additionally, there is total visibility
-on which roles are being used.
+The big win with this approach is that you don't need to have over-granted service
+accounts spread across pipelines or create and hand over service accounts to users 
+(as long as they have permission to access this roleset path). Additionally, there
+is total visibility on which roles are being used. Any changes would be reviewed
+and approved before being applied.
+ 
