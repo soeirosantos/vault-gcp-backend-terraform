@@ -248,6 +248,8 @@ for other ends with the role granularity you wish.
 
 Just run a `terraform apply` and if everything looks fine, confirm and apply it.
 
+## Generate Service Account Keys from Vault
+
 To test if it is working fine we use the Vault CLI to generate a service account key.
 
 ```bash
