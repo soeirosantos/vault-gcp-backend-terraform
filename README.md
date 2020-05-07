@@ -1,7 +1,7 @@
 # Vault as a GCP Broker Laboratory
 
 The purpose of this lab is to show how we can use Vault acting as a broker to
-manage GCP service accounts. We are going to use Terraform (TF) to keep the
+manage GCP service accounts. We are going to use Terraform to keep the
 configuration. It gives more visibility on our infrastrucutre and makes the
 change management process clearer. Since we can have all the TF configurations
 versioned in the VCS, changes can be rolled out through the CI/CD pipelines upon
