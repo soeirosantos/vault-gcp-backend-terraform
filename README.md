@@ -210,7 +210,8 @@ resource "vault_gcp_secret_backend" "gcp_secret_backend" {
 
 We are setting the `default_lease_ttl_seconds` to 2 minutes, which means that the
 secrets will not live longer than 2 minutes by default, and we are setting the
-`max_lease_ttl_seconds` to 1 hour.
+`max_lease_ttl_seconds` to 1 hour, which means that for this backend users cannot
+create secrets that live longer than one hour.
 
 You may want to run `terraform plan` at this point and check how things are going.
 
