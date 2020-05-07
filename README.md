@@ -19,6 +19,26 @@ $ docker run --cap-add=IPC_LOCK --rm -it \
 -p 8200:8200 \
 -e ADV_HOST=127.0.0.1 \
 vault
+
+[...]
+WARNING! dev mode is enabled! In this mode, Vault runs entirely in-memory
+and starts unsealed with a single unseal key. The root token is already
+authenticated to the CLI, so you can immediately begin using Vault.
+
+You may need to set the following environment variable:
+
+    $ export VAULT_ADDR='http://0.0.0.0:8200'
+
+The unseal key and root token are displayed below in case you want to
+seal/unseal the Vault or re-authenticate.
+
+Unseal Key: 5Ho0cTx+RFDV6MayTUloizL9wBYDgoJ/19OFh7epWFg=
+Root Token: s.spqOs3rJ8ktgjcU16JBc7LPJ
+
+Development mode should NOT be used in production installations!
+
+==> Vault server started! Log data will stream in below:
+[...]
 ```
 
 We are intentionally leaving the process running in the foreground so we can easily
