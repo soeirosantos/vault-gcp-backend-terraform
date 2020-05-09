@@ -270,4 +270,6 @@ accounts spread across pipelines or create and hand over service accounts to use
 (as long as they have permission to access this roleset path). Additionally, there
 is total visibility on which roles are being used and on your overal security
 configuration (permissions, policies, etc). Ideally, any changes would go through
-a peer review process and would be approved before being applied.
+a peer review process and would be approved before being applied. We are working
+towards improving aspects related to the principle of least privilege and the
+principle of segregation of duties.
