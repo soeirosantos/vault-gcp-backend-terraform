@@ -1,4 +1,4 @@
-# Vault as a GCP Broker Laboratory
+# Vault as a GCP Broker Lab
 
 The purpose of this lab is to show how we can use Vault acting as a broker to
 manage GCP service accounts. We are going to use Terraform to keep the
