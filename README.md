@@ -265,6 +265,18 @@ key_type            TYPE_GOOGLE_CREDENTIALS_FILE
 private_key_data    ewogI...
 ```
 
+The `private_key_data` field is you service account key encoded in base64. To extract
+it directly to a json file you can do something like this:
+
+```bash
+$ vault read -format=json gcp-broker/your-project-name-gcp-secret/key/gke-admin \
+| jq -r .data.private_key_data | base64 -D - > json_key.json
+```
+
+You need [jq](https://stedolan.github.io/jq/) for this last command.
+
+## Final Thoughts
+
 The big win with this approach is that you don't need to have over-granted service
 accounts spread across pipelines or create and hand over service accounts to users
 (as long as they have permission to access this roleset path). Additionally, there
